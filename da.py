@@ -81,7 +81,6 @@ for i in threads:
     i.join()
 '''
 
-print("popa")
 coord = 0
 deps = 0.1
 x_plot = [ 0.3 +  i*deps for i in range(0, 20)]
