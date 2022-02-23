@@ -5,6 +5,8 @@ import tabulate
 import pandas as pd
 import threading 
 import matplotlib.pyplot as plt 
+import math
+import numpy as np
 def fetchCoord(coord, data):
     #print(coord)
     return  [a[coord] for a in data]
@@ -33,7 +35,7 @@ def C(eps, zs):
     tmp = 0;
     for i in range(0, len(zs)):
         for k in range (0, len(zs)):
-            tmp += Tetta(zs[i], zs[k])
+            tmp += Tetta(zs[i], zs[k], eps)
     tmp = tmp/(len(zs)**2)
     return tmp
 
@@ -56,7 +58,7 @@ tmp = []
 for i in range(0, len(measurement)-1, tau):
    tmp.append(measurement[i])
 measurement = tmp;
-
+print(measurement)
 def printData(data):
     for i in data:
         for k in i:
@@ -65,24 +67,42 @@ def printData(data):
 
 Nstart = 4
 Nstop = 10
-
+'''
 def func(res, coord):
+    #res[coord] = [ln(C(0.01, getZs(N=i, coord=coord))) for i in range (Nstart, Nstop)]
     res[coord] = [Dc(0.01, getZs(N=i, coord=coord)) for i in range (Nstart, Nstop)]
 data = [[]] * 16
 threads = [threading.Thread(target=func, args=(data, i)) for i in range(0, 16)]
+
 for i in threads:
     i.start()
 
 for i in threads:
     i.join()
-    
+'''
 
+print("popa")
+coord = 0
+deps = 0.1
+x_plot = [ 0.3 +  i*deps for i in range(0, 20)]
+y_plots= []
+for i in range (Nstart, Nstop):
+    y_plots.append([math.log(C(eps , getZs(i, coord))) for eps in x_plot])
+    A = np.vstack ([[math.log(x) for x in x_plot], np.ones(len(x_plot))]).T
+    m,c = np.linalg.lstsq(A, y_plots[-1], rcond=None)[0]
+    plt.plot([math.log(x) for x in x_plot], m*np.array([math.log(x) for x in x_plot]) + c, "-.", label=f"Dc = {m} for dim zs =  {i}, ")
+    plt.plot([math.log(x) for x in x_plot], y_plots[-1], "-", label=f"dim Zs =  {i}")
+plt.legend()
+plt.show()
+
+
+"""
 #data = [[Dc(0.01, getZs(N=i, coord=k)) for i in range(Nstart,Nstop)] for k in  range(0,16)]
 x_plot = [i for i in range(Nstart, Nstop)]
 y_plots = []
 for i in range(0, 16):
     y_plots.append(data[i])
-    plt.plot(x_plot, y_plots[-1], "-", label=f"Координата {i}")
+    plt.plot(x_plot, y_plots[-1], "-", label=f"Канал {i}")
 
 #x_plot = [i for i in range(Nstart,Nstop )]
 #y_plot = data[3]
@@ -93,3 +113,4 @@ plt.show()
 out = open("output.html", 'w')
 out.write(f"tau = {tau}")
 out.write(pd.DataFrame(data, index=[f"Канал {i}" for i in range(0, 16 )]  , columns= [f"dim zi={i}" for i in range (Nstart,Nstop)]).to_html())
+"""
