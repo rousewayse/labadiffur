@@ -19,12 +19,13 @@ def getZs(N=4, coord = 0):
         zs.append(list(map(float,  da[i:i+N])))
     return zs
 
+def dist(z1, z2):
+    tmp = 0;
+    for i in range(0, len(z1)):
+        tmp += (z1[i] - z2[i])**2
+    return math.sqrt(tmp)
+
 def Tetta(z1, z2, eps=0.01):
-    def dist(z1, z2):
-        tmp = 0;
-        for i in range(0, len(z1)):
-            tmp += (z1[i] - z2[i])**2
-        return math.sqrt(tmp)
     tmp = eps - dist(z1, z2)
     if tmp < 0:
         return 0
@@ -81,12 +82,27 @@ for i in threads:
     i.join()
 '''
 
+def get_eps(zi):
+    mins = []
+    for i in zi:
+        mins.append(min([dist(i, j) for j in list(filter(lambda z: z != i ,zi)) ]))
+    return min(mins)
+        
+zs = getZs(4, 0)
+print(get_eps(zs[ :len(zs)//3 ]))
+print(get_eps(zs[ :2*len(zs)//3 ]))
+print(get_eps(zs))
+
+
+
 coord = 0
 deps = 0.1
 x_plot = [ 0.3 +  i*deps for i in range(0, 20)]
 y_plots= []
 for i in range (Nstart, Nstop):
-    y_plots.append([math.log(C(eps , getZs(i, coord))) for eps in x_plot])
+    zs = getZs(i, coord)
+    x_plot = sorted([ get_eps(zs[:len(zs)//3]), get_eps(zs[: 2*len(zs)//3]), get_eps(zs)])
+    y_plots.append([math.log(C(eps , zs)) for eps in x_plot])
     A = np.vstack ([[math.log(x) for x in x_plot], np.ones(len(x_plot))]).T
     m,c = np.linalg.lstsq(A, y_plots[-1], rcond=None)[0]
     plt.plot([math.log(x) for x in x_plot], m*np.array([math.log(x) for x in x_plot]) + c, "-.", label=f"Dc = {m} for dim zs =  {i}, ")
