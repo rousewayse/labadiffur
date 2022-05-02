@@ -22,9 +22,7 @@ def RungeKutt(t0, x0, y0, f, iters, h):
         x.append(x[-1] +  h/6*(k1[0]+2*k2[0]+2*k3[0] + k4[0]))
         y.append(y[-1] +  h/6*(k1[1]+2*k2[1]+2*k3[1] + k4[1]))
     return (x, y)
-x, y = RungeKutt(0,0.5,0.5,f,20000,0.01)
-print(x);
-print(y)
-plt.scatter(x,y, label="runge", s=0.5);
+x, y = RungeKutt(0,0.5,0.55,f,50000,0.01)
+plt.scatter(x,y, label="runge", s=0.3);
 plt.legend()
 plt.show()
