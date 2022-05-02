@@ -101,8 +101,11 @@ x_plot = [ 0.3 +  i*deps for i in range(0, 20)]
 y_plots= []
 for i in range (Nstart, Nstop):
     zs = getZs(i, coord)
-    x_plot = sorted([ get_eps(zs[:len(zs)//3]), get_eps(zs[: 2*len(zs)//3]), get_eps(zs)])
+    x_plot = sorted([ get_eps(zs[:len(zs)//2]), get_eps(zs)])
+    print(x_plot)
     y_plots.append([math.log(C(eps , zs)) for eps in x_plot])
+    print(y_plots[-1])
+    print([math.log(x) for x in x_plot])
     A = np.vstack ([[math.log(x) for x in x_plot], np.ones(len(x_plot))]).T
     m,c = np.linalg.lstsq(A, y_plots[-1], rcond=None)[0]
     plt.plot([math.log(x) for x in x_plot], m*np.array([math.log(x) for x in x_plot]) + c, "-.", label=f"Dc = {m} for dim zs =  {i}, ")
