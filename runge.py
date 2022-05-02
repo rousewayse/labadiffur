@@ -1,11 +1,13 @@
 #!/bin/env python3
 import matplotlib.pyplot as plt
-
+from math import exp
 
 
 
 def f(t, x, y):
-    return (t, t**2)
+    p1 = 1
+    p2 = -0.01
+    return (exp(y) - 1 + p2*(exp(x)-1)/(p2 + exp(2*x))*exp(y), p1*(1 - exp(x)) - p1*p2*(exp(x)-1)/(p2 + exp(2*x))*exp(x))
 #(x0, y0) --- Cauchy, f = y' --- function, iters --- number of iterations, h - is step
 def RungeKutt(t0, x0, y0, f, iters, h):
     x = [x0]
@@ -20,8 +22,9 @@ def RungeKutt(t0, x0, y0, f, iters, h):
         x.append(x[-1] +  h/6*(k1[0]+2*k2[0]+2*k3[0] + k4[0]))
         y.append(y[-1] +  h/6*(k1[1]+2*k2[1]+2*k3[1] + k4[1]))
     return (x, y)
-x, y = RungeKutt(-0.5,0,0,f,100,0.01)
-
-plt.plot(x,y, ".", label="runge");
+x, y = RungeKutt(0,0.5,0.5,f,20000,0.01)
+print(x);
+print(y)
+plt.scatter(x,y, label="runge", s=0.5);
 plt.legend()
 plt.show()
